@@ -247,7 +247,7 @@ formatTime : Time.Time -> String
 formatTime timeLeft =
     let
         leftInSeconds =
-            floor <| Time.inSeconds timeLeft
+            round <| Time.inSeconds timeLeft
 
         hours =
             leftInSeconds // (60 * 60)
