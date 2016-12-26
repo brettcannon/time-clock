@@ -27,7 +27,8 @@ init =
       , workLeft = 0
       , lunchLength = 0
       , lunchLeft = 0
-      , ticking = Personal
+      , ticking = False
+      , outToLunch = False
       , lastTick = 0
       }
     , Cmd.none
@@ -39,16 +40,10 @@ type alias Model =
     , workLeft : Time.Time
     , lunchLength : Time.Time
     , lunchLeft : Time.Time
-    , ticking : Tick
+    , ticking : Bool
+    , outToLunch : Bool
     , lastTick : Time.Time
     }
-
-
-type Tick
-    = Personal
-    | Work
-    | Lunch
-
 
 
 -- UPDATE
@@ -56,21 +51,12 @@ type Tick
 
 type Msg
     = Start
-      -- Starts the clock, fires FirstTick.
     | Pause
-      -- Stops the clock, fires WorkTick to clean up any leftover time.
     | FirstTick Time.Time
-      -- Prime the lastTick.
     | WorkTick Time.Time
-      -- Decrement work time left.
-    | StartLunch
-      -- Switch the clock to tick for lunch.
-    | StopLunch
-      -- Switch the clocak back to ticking for work.
+    | ToggleLunch
     | LunchTick Time.Time
-      -- Decrement lunch time and work time (as appropriate).
     | NewWorkLength String
-      -- Update how long the workday is.
     | NewLunchLength String
 
 
@@ -110,19 +96,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Start ->
-            ( { model | ticking = Work }, Task.perform FirstTick Time.now )
+            ( { model | ticking = True }, Task.perform FirstTick Time.now )
 
         FirstTick startTime ->
             ( { model | lastTick = startTime }, Cmd.none )
 
         Pause ->
-            ( { model | ticking = Personal }, Task.perform WorkTick Time.now )
+            ( { model | ticking = False }, Task.perform WorkTick Time.now )
 
-        StartLunch ->
-            ( { model | ticking = Lunch }, Cmd.none )
-
-        StopLunch ->
-            ( { model | ticking = Work }, Cmd.none )
+        ToggleLunch ->
+            ( { model | outToLunch = not model.outToLunch }, Cmd.none )
 
         WorkTick newTime ->
             ( decrementWork model newTime
@@ -182,16 +165,12 @@ subscriptions model =
         ticker =
             Time.every Time.second
     in
-        case model.ticking of
-            Work ->
-                ticker WorkTick
-
-            Lunch ->
+        if model.ticking then
+            if model.outToLunch then
                 ticker LunchTick
-
-            Personal ->
-                Sub.none
-
+            else
+                ticker WorkTick
+        else Sub.none
 
 
 -- VIEW
@@ -237,7 +216,11 @@ view model =
             ]
         , Html.br [] []
         , workButton model
-        , lunchButton model
+        , Html.label []
+            [ Html.input
+                [ HtmlAttr.type_ "checkbox"
+                , Html.Events.onClick ToggleLunch ] []
+            , Html.text "Out to Lunch" ]
         ]
 
 
@@ -278,32 +261,14 @@ workButton : Model -> Html.Html Msg
 workButton model =
     Html.button
         [ Html.Events.onClick <|
-            if model.ticking == Personal then
+            if not model.ticking then
                 Start
             else
                 Pause
         ]
         [ Html.text <|
-            if model.ticking == Personal then
+            if not model.ticking then
                 "Start"
             else
                 "Pause"
-        ]
-
-
-lunchButton : Model -> Html.Html Msg
-lunchButton model =
-    Html.button
-        [ Html.Events.onClick <|
-            if model.ticking == Lunch then
-                StopLunch
-            else
-                StartLunch
-        ]
-        -- XXX disable as appropriately
-        [ Html.text <|
-            if model.ticking == Lunch then
-                "Back from lunch"
-            else
-                "Go to lunch"
         ]
