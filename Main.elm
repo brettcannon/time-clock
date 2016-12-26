@@ -227,8 +227,6 @@ view model =
             ]
         , Html.br [] []
         , Html.span []
-            -- XXX http://package.elm-lang.org/packages/circuithub/elm-number-format/latest/Number-Format
-            -- XXX Output hours, minutes, and seconds? HH:MM:SS
             [ Html.text "Seconds left in the workday: "
             , Html.text <| formatTime model.workLeft
             ]
