@@ -97,6 +97,15 @@ timeDecrement timeLeft oldTime newTime =
         timeLeft - timePast
 
 
+decrementWork : Model -> Time.Time -> Model
+decrementWork model newTime =
+    let
+        newWorkLeft =
+            timeDecrement model.workLeft model.lastTick newTime
+    in
+        { model | lastTick = newTime, workLeft = newWorkLeft }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -116,33 +125,19 @@ update msg model =
             ( { model | ticking = Work }, Cmd.none )
 
         WorkTick newTime ->
-            let
-                newWorkLeft =
-                    timeDecrement model.workLeft model.lastTick newTime
-            in
-                ( { model | lastTick = newTime, workLeft = newWorkLeft }
-                , Cmd.none
-                )
+            ( decrementWork model newTime
+            , Cmd.none
+            )
 
         LunchTick newTime ->
             let
+                workDecrementedModel =
+                    decrementWork model newTime
+
                 lunchLeft =
                     timeDecrement model.lunchLeft model.lastTick newTime
-
-                workShift =
-                    if lunchLeft > 0 then
-                        (newTime - model.lastTick)
-                    else
-                        0
-
-                workLeft =
-                    model.workLeft - workShift
             in
-                ( { model
-                    | lastTick = newTime
-                    , lunchLeft = lunchLeft
-                    , workLeft = workLeft
-                  }
+                ( { workDecrementedModel | lunchLeft = lunchLeft }
                 , Cmd.none
                 )
 
