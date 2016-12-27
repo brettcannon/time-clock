@@ -179,49 +179,115 @@ subscriptions model =
 view : Model -> Html.Html Msg
 view model =
     Html.div []
-        [ Html.label []
-            [ Html.text "Length of workday (in hours) "
-            , Html.input
-                [ HtmlAttr.type_ "number"
-                , HtmlAttr.min <| toString 0.0
-                , HtmlAttr.max <| toString 24
-                , HtmlAttr.step <| toString 0.1
-                , HtmlAttr.value <| toString <| Time.inHours model.workDayLength
-                , Html.Events.onInput NewWorkLength
+        [ Html.div
+            [ HtmlAttr.class "mdl-grid" ]
+            [ Html.div
+                [ HtmlAttr.class "mdl-cell mdl-cell--3-col" ]
+                [ Html.div
+                    [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
+                    [ Html.input
+                        [ HtmlAttr.type_ "number"
+                        , HtmlAttr.min <| toString 0.0
+                        , HtmlAttr.max <| toString 24
+                        , HtmlAttr.step <| toString 0.1
+                        , Html.Events.onInput NewWorkLength
+                        , HtmlAttr.id "work-length-input"
+                        , HtmlAttr.class "mdl-textfield__input"
+                        ]
+                        []
+                    , Html.label
+                        [ HtmlAttr.for "work-length-input"
+                        , HtmlAttr.class "mdl-textfield__label"
+                        ]
+                        [ Html.text "Hours in the workday ..." ]
+                    ]
                 ]
-                []
-            ]
-        , Html.br [] []
-        , Html.label []
-            [ Html.text "Length of lunch break (in minutes) "
-            , Html.input
-                [ HtmlAttr.type_ "number"
-                , HtmlAttr.min <| toString 0
-                , HtmlAttr.max <| toString (24 * 60)
-                , HtmlAttr.step <| toString 1
-                , HtmlAttr.value <| toString <| Time.inMinutes model.lunchLength
-                , Html.Events.onInput NewLunchLength
+            , Html.div
+                [ HtmlAttr.class "mdl-cell mdl-cell--3-col" ]
+                [ Html.div
+                    [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
+                    [ Html.input
+                        [ HtmlAttr.type_ "number"
+                        , HtmlAttr.min <| toString 0.0
+                        , HtmlAttr.max <| toString (24 * 60)
+                        , HtmlAttr.step <| toString 1
+                        , Html.Events.onInput NewLunchLength
+                        , HtmlAttr.id "lunch-length-input"
+                        , HtmlAttr.class "mdl-textfield__input"
+                        ]
+                        []
+                    , Html.label
+                        [ HtmlAttr.for "lunch-length-input"
+                        , HtmlAttr.class "mdl-textfield__label"
+                        ]
+                        [ Html.text "Minutes for a lunch break ..." ]
+                    ]
                 ]
-                []
             ]
-        , Html.br [] []
-        , Html.span []
-            [ Html.text "Seconds left in the workday: "
-            , Html.text <| formatTime model.workLeft
+        , Html.div
+            [ HtmlAttr.class "mdl-grid" ]
+            [ Html.div
+                [ HtmlAttr.class "mdl-cell mdl-cell--2-col" ]
+                [ Html.label
+                    [ HtmlAttr.for "out-to-lunch"
+                    , HtmlAttr.class "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+                    ]
+                    [ Html.input
+                        [ HtmlAttr.type_ "checkbox"
+                        , HtmlAttr.id "out-to-lunch"
+                        , Html.Events.onClick ToggleLunch
+                        , HtmlAttr.class "mdl-checkbox__input"
+                        ]
+                        []
+                    , Html.span
+                        [ HtmlAttr.class "mdl-checkbox__label" ]
+                        [ Html.text "Out to Lunch" ]
+                    ]
+                ]
             ]
-        , Html.br [] []
-        , Html.span []
-            [ Html.text "Seonds left for lunch: "
-            , Html.text <| formatTime model.lunchLeft
+        , Html.div
+            [ HtmlAttr.class "mdl-grid" ]
+            [ Html.div
+                [ HtmlAttr.class "mdl-cell mdl-cell--1-col" ]
+                [ workButton model ]
             ]
-        , Html.br [] []
-        , workButton model
-        , Html.label []
-            [ Html.input
-                [ HtmlAttr.type_ "checkbox"
-                , Html.Events.onClick ToggleLunch ] []
-            , Html.text "Out to Lunch" ]
+        , Html.div
+            [ HtmlAttr.class "mdl-grid" ]
+            [ Html.h1 []
+                [ Html.text <| workClock model.workLeft
+                ]
+            ]
+        , Html.div
+            [ HtmlAttr.class "mdl-grid" ]
+            [ Html.h1 []
+                [ Html.text <| lunchClock model.lunchLeft
+                ]
+            ]
         ]
+
+
+workClock : Time.Time -> String
+workClock timeLeft =
+    let
+        message =
+            if timeLeft >= 0 then
+                "Seconds left in the workday:"
+            else
+                "OVERTIME!"
+    in
+        message ++ " " ++ formatTime timeLeft
+
+
+lunchClock : Time.Time -> String
+lunchClock timeLeft =
+    let
+        message =
+            if timeLeft >= 0 then
+                "Second left for lunch:"
+            else
+                "LONG LUNCH!"
+    in
+        message ++ " " ++ formatTime timeLeft
 
 
 formatTime : Time.Time -> String
@@ -265,10 +331,14 @@ workButton model =
                 Start
             else
                 Pause
+        , HtmlAttr.class
+            "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
         ]
-        [ Html.text <|
-            if not model.ticking then
-                "Start"
-            else
-                "Pause"
+        [ Html.i [ HtmlAttr.class "material-icons" ]
+            [ Html.text <|
+                if not model.ticking then
+                    "play_arrow"
+                else
+                    "pause"
+            ]
         ]
