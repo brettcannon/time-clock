@@ -203,16 +203,13 @@ view model =
                 ]
             ]
         , mdlGrid
-            [ mdlCell 2
-                [ mdlCheckbox "Out to Lunch" ToggleLunch ]
-            ]
-        , mdlGrid
-            [ mdlCell 1
+            [ mdlCell 12
                 [ workButton model ]
             ]
         , mdlGrid
             [ mdlCell 12
-                [ Html.h1 []
+                [ Html.hr [] []
+                , Html.h1 []
                     [ Html.text <| workClock model.workLeft
                     ]
                 ]
@@ -222,7 +219,12 @@ view model =
                 [ Html.h1 []
                     [ Html.text <| lunchClock model.lunchLeft
                     ]
+                , Html.hr [] []
                 ]
+            ]
+        , mdlGrid
+            [ mdlCell 12
+                [ mdlCheckbox "Out to Lunch" ToggleLunch ]
             ]
         ]
 
