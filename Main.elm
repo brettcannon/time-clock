@@ -46,6 +46,7 @@ type alias Model =
     }
 
 
+
 -- UPDATE
 
 
@@ -170,7 +171,9 @@ subscriptions model =
                 ticker LunchTick
             else
                 ticker WorkTick
-        else Sub.none
+        else
+            Sub.none
+
 
 
 -- VIEW
@@ -179,90 +182,94 @@ subscriptions model =
 view : Model -> Html.Html Msg
 view model =
     Html.div []
-        [ Html.div
-            [ HtmlAttr.class "mdl-grid" ]
-            [ Html.div
-                [ HtmlAttr.class "mdl-cell mdl-cell--3-col" ]
-                [ Html.div
-                    [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
-                    [ Html.input
-                        [ HtmlAttr.type_ "number"
-                        , HtmlAttr.min <| toString 0.0
-                        , HtmlAttr.max <| toString 24
-                        , HtmlAttr.step <| toString 0.1
-                        , Html.Events.onInput NewWorkLength
-                        , HtmlAttr.id "work-length-input"
-                        , HtmlAttr.class "mdl-textfield__input"
-                        ]
-                        []
-                    , Html.label
-                        [ HtmlAttr.for "work-length-input"
-                        , HtmlAttr.class "mdl-textfield__label"
-                        ]
-                        [ Html.text "Hours in the workday ..." ]
+        [ mdlGrid
+            [ mdlCell 3
+                [ mdlTextField "number"
+                    "Hours in the workday ..."
+                    NewWorkLength
+                    [ HtmlAttr.min <| toString 0.0
+                    , HtmlAttr.max <| toString 24
+                    , HtmlAttr.step <| toString 0.1
                     ]
                 ]
-            , Html.div
-                [ HtmlAttr.class "mdl-cell mdl-cell--3-col" ]
-                [ Html.div
-                    [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
-                    [ Html.input
-                        [ HtmlAttr.type_ "number"
-                        , HtmlAttr.min <| toString 0.0
-                        , HtmlAttr.max <| toString (24 * 60)
-                        , HtmlAttr.step <| toString 1
-                        , Html.Events.onInput NewLunchLength
-                        , HtmlAttr.id "lunch-length-input"
-                        , HtmlAttr.class "mdl-textfield__input"
-                        ]
-                        []
-                    , Html.label
-                        [ HtmlAttr.for "lunch-length-input"
-                        , HtmlAttr.class "mdl-textfield__label"
-                        ]
-                        [ Html.text "Minutes for a lunch break ..." ]
+            , mdlCell 3
+                [ mdlTextField "number"
+                    "Minutes for a lunch break ..."
+                    NewLunchLength
+                    [ HtmlAttr.min <| toString 0.0
+                    , HtmlAttr.max <| toString (24 * 60)
+                    , HtmlAttr.step <| toString 1
                     ]
                 ]
             ]
-        , Html.div
-            [ HtmlAttr.class "mdl-grid" ]
-            [ Html.div
-                [ HtmlAttr.class "mdl-cell mdl-cell--2-col" ]
-                [ Html.label
-                    [ HtmlAttr.for "out-to-lunch"
-                    , HtmlAttr.class "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
-                    ]
-                    [ Html.input
-                        [ HtmlAttr.type_ "checkbox"
-                        , HtmlAttr.id "out-to-lunch"
-                        , Html.Events.onClick ToggleLunch
-                        , HtmlAttr.class "mdl-checkbox__input"
-                        ]
-                        []
-                    , Html.span
-                        [ HtmlAttr.class "mdl-checkbox__label" ]
-                        [ Html.text "Out to Lunch" ]
-                    ]
-                ]
+        , mdlGrid
+            [ mdlCell 2
+                [ mdlCheckbox "Out to Lunch" ToggleLunch ]
             ]
-        , Html.div
-            [ HtmlAttr.class "mdl-grid" ]
-            [ Html.div
-                [ HtmlAttr.class "mdl-cell mdl-cell--1-col" ]
+        , mdlGrid
+            [ mdlCell 1
                 [ workButton model ]
             ]
-        , Html.div
-            [ HtmlAttr.class "mdl-grid" ]
-            [ Html.h1 []
-                [ Html.text <| workClock model.workLeft
+        , mdlGrid
+            [ mdlCell 12
+                [ Html.h1 []
+                    [ Html.text <| workClock model.workLeft
+                    ]
                 ]
             ]
-        , Html.div
-            [ HtmlAttr.class "mdl-grid" ]
-            [ Html.h1 []
-                [ Html.text <| lunchClock model.lunchLeft
+        , mdlGrid
+            [ mdlCell 12
+                [ Html.h1 []
+                    [ Html.text <| lunchClock model.lunchLeft
+                    ]
                 ]
             ]
+        ]
+
+
+mdlGrid : List (Html.Html Msg) -> Html.Html Msg
+mdlGrid contents =
+    Html.div [ HtmlAttr.class "mdl-grid" ] contents
+
+
+mdlCell : Int -> List (Html.Html Msg) -> Html.Html Msg
+mdlCell columns contents =
+    Html.div
+        [ HtmlAttr.class ("mdl-cell mdl-cell--" ++ toString columns ++ "-col") ]
+        contents
+
+
+mdlCheckbox : String -> Msg -> Html.Html Msg
+mdlCheckbox label onClickMsg =
+    Html.label
+        [ HtmlAttr.class "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" ]
+        [ Html.input
+            [ HtmlAttr.type_ "checkbox"
+            , Html.Events.onClick onClickMsg
+            , HtmlAttr.class "mdl-checkbox__input"
+            ]
+            []
+        , Html.span
+            [ HtmlAttr.class "mdl-checkbox__label" ]
+            [ Html.text label ]
+        ]
+
+
+mdlTextField : String -> String -> (String -> Msg) -> List (Html.Attribute Msg) -> Html.Html Msg
+mdlTextField type_ label onInputMsg attrs =
+    Html.div
+        [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
+        [ Html.input
+            ([ HtmlAttr.class "mdl-textfield__input"
+             , HtmlAttr.type_ type_
+             , Html.Events.onInput onInputMsg
+             ]
+                ++ attrs
+            )
+            []
+        , Html.label
+            [ HtmlAttr.class "mdl-textfield__label" ]
+            [ Html.text label ]
         ]
 
 
