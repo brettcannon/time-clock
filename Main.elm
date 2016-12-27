@@ -210,15 +210,13 @@ view model =
             [ mdlCell 12
                 [ Html.hr [] []
                 , Html.h1 []
-                    [ Html.text <| workClock model.workLeft
-                    ]
+                    [ Html.text <| workClock model.workLeft ]
                 ]
             ]
         , mdlGrid
             [ mdlCell 12
                 [ Html.h1 []
-                    [ Html.text <| lunchClock model.lunchLeft
-                    ]
+                    [ Html.text <| lunchClock model.lunchLeft ]
                 , Html.hr [] []
                 ]
             ]
@@ -280,11 +278,11 @@ workClock timeLeft =
     let
         message =
             if timeLeft >= 0 then
-                "Seconds left in the workday:"
+                "👩\x200D💻"
             else
-                "OVERTIME!"
+                "👩\x200D💻 OVERTIME!"
     in
-        message ++ " " ++ formatTime timeLeft
+        formatTime timeLeft ++ " " ++ message
 
 
 lunchClock : Time.Time -> String
@@ -292,11 +290,11 @@ lunchClock timeLeft =
     let
         message =
             if timeLeft >= 0 then
-                "Second left for lunch:"
+                "🍱"
             else
-                "LONG LUNCH!"
+                "LONG 🍱!"
     in
-        message ++ " " ++ formatTime timeLeft
+        formatTime timeLeft ++ " " ++ message
 
 
 formatTime : Time.Time -> String
