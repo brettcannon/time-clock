@@ -209,14 +209,12 @@ view model =
         , mdlGrid
             [ mdlCell 12
                 [ Html.hr [] []
-                , Html.h1 []
-                    [ Html.text <| workClock model.workLeft ]
+                , Html.h1 [] (formatTime "👩\x200D💻" model.workLeft)
                 ]
             ]
         , mdlGrid
             [ mdlCell 12
-                [ Html.h1 []
-                    [ Html.text <| lunchClock model.lunchLeft ]
+                [ Html.h1 [] (formatTime "🍱" model.lunchLeft)
                 , Html.hr [] []
                 ]
             ]
@@ -273,32 +271,15 @@ mdlTextField type_ label onInputMsg attrs =
         ]
 
 
-workClock : Time.Time -> String
-workClock timeLeft =
-    let
-        message =
-            if timeLeft >= 0 then
-                "👩\x200D💻"
-            else
-                "👩\x200D💻 OVERTIME!"
-    in
-        formatTime timeLeft ++ " " ++ message
+mdlBadge : String -> String -> Html.Html Msg
+mdlBadge message contents =
+    Html.span
+        [HtmlAttr.class "mdl-badge", HtmlAttr.attribute "data-badge" message ]
+        [ Html.text contents ]
 
 
-lunchClock : Time.Time -> String
-lunchClock timeLeft =
-    let
-        message =
-            if timeLeft >= 0 then
-                "🍱"
-            else
-                "LONG 🍱!"
-    in
-        formatTime timeLeft ++ " " ++ message
-
-
-formatTime : Time.Time -> String
-formatTime timeLeft =
+formatTime : String -> Time.Time -> List(Html.Html Msg)
+formatTime suffix timeLeft =
     let
         leftInSeconds =
             round <| Time.inSeconds timeLeft
@@ -317,17 +298,25 @@ formatTime timeLeft =
 
         seconds =
             Time.inSeconds timeLeft
+
+        timeLeftString =
+            (if timeLeft < 0 then
+                "-"
+            else
+                " "
+            )
+                ++ (String.pad 2 '0' <| toString <| hours)
+                ++ ":"
+                ++ (String.pad 2 '0' <| toString <| abs <| minutes)
+                ++ ":"
+                ++ (String.pad 2 '0' <| toString <| abs <| leftAfterMinutes)
     in
-        (if timeLeft < 0 then
-            "-"
-         else
-            " "
-        )
-            ++ (String.pad 2 '0' <| toString <| hours)
-            ++ ":"
-            ++ (String.pad 2 '0' <| toString <| abs <| minutes)
-            ++ ":"
-            ++ (String.pad 2 '0' <| toString <| abs <| leftAfterMinutes)
+        if timeLeft >= 0 then
+            [ Html.span [] [ Html.text <| timeLeftString ++ " " ++ suffix ] ]
+        else
+            [ mdlBadge "!" timeLeftString
+            , Html.text <| suffix
+            ]
 
 
 workButton : Model -> Html.Html Msg
