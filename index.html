@@ -42,6 +42,10 @@
 <script>
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
+
+    // MDL doesn't like dynamic DOM nodes, so forcibly upgrade nodes to use
+    // JavaScript features.
+    componentHandler.upgradeAllRegistered();
 </script>
 
   </body>
