@@ -6,7 +6,8 @@
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_purple-pink.min.css">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <!-- Don't defer load of MDL code, else nodes aren't upgraded. -->
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   </head>
   <body>
 
@@ -42,10 +43,6 @@
 <script>
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
-
-    // MDL doesn't like dynamic DOM nodes, so forcibly upgrade nodes to use
-    // JavaScript features.
-    componentHandler.upgradeAllRegistered();
 </script>
 
   </body>
