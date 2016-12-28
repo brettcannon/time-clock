@@ -1,10 +1,10 @@
 {
-    "version": "1.2.0",
+    "version": "2.0.0",
     "summary": "A simple, one-page time clock web app",
     "repository": "https://github.com/brettcannon/time-clock.git",
     "license": "Apache",
     "source-directories": [
-        "."
+        "src"
     ],
     "exposed-modules": [],
     "dependencies": {

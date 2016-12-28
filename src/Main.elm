@@ -6,6 +6,8 @@ import Html.Events
 import Task
 import Time
 
+import Mdl
+
 
 main : Program Never Model Msg
 main =
@@ -182,9 +184,9 @@ subscriptions model =
 view : Model -> Html.Html Msg
 view model =
     Html.div []
-        [ mdlGrid
-            [ mdlCell 3
-                [ mdlTextField "number"
+        [ Mdl.grid
+            [ Mdl.cell 3
+                [ Mdl.textField "number"
                     "Hours in the workday ..."
                     NewWorkLength
                     [ HtmlAttr.min <| toString 0.0
@@ -192,8 +194,8 @@ view model =
                     , HtmlAttr.step <| toString 0.1
                     ]
                 ]
-            , mdlCell 3
-                [ mdlTextField "number"
+            , Mdl.cell 3
+                [ Mdl.textField "number"
                     "Minutes for a lunch break ..."
                     NewLunchLength
                     [ HtmlAttr.min <| toString 0.0
@@ -202,80 +204,27 @@ view model =
                     ]
                 ]
             ]
-        , mdlGrid
-            [ mdlCell 12
+        , Mdl.grid
+            [ Mdl.cell 12
                 [ workButton model ]
             ]
-        , mdlGrid
-            [ mdlCell 12
+        , Mdl.grid
+            [ Mdl.cell 12
                 [ Html.hr [] []
                 , Html.h1 [] (formatTime "👩\x200D💻" model.workLeft)
                 ]
             ]
-        , mdlGrid
-            [ mdlCell 12
+        , Mdl.grid
+            [ Mdl.cell 12
                 [ Html.h1 [] (formatTime "🍱" model.lunchLeft)
                 , Html.hr [] []
                 ]
             ]
-        , mdlGrid
-            [ mdlCell 12
-                [ mdlCheckbox "Out to Lunch" ToggleLunch ]
+        , Mdl.grid
+            [ Mdl.cell 12
+                [ Mdl.checkbox "Out to Lunch" ToggleLunch ]
             ]
         ]
-
-
-mdlGrid : List (Html.Html Msg) -> Html.Html Msg
-mdlGrid contents =
-    Html.div [ HtmlAttr.class "mdl-grid" ] contents
-
-
-mdlCell : Int -> List (Html.Html Msg) -> Html.Html Msg
-mdlCell columns contents =
-    Html.div
-        [ HtmlAttr.class ("mdl-cell mdl-cell--" ++ toString columns ++ "-col") ]
-        contents
-
-
-mdlCheckbox : String -> Msg -> Html.Html Msg
-mdlCheckbox label onClickMsg =
-    Html.label
-        [ HtmlAttr.class "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" ]
-        [ Html.input
-            [ HtmlAttr.type_ "checkbox"
-            , Html.Events.onClick onClickMsg
-            , HtmlAttr.class "mdl-checkbox__input"
-            ]
-            []
-        , Html.span
-            [ HtmlAttr.class "mdl-checkbox__label" ]
-            [ Html.text label ]
-        ]
-
-
-mdlTextField : String -> String -> (String -> Msg) -> List (Html.Attribute Msg) -> Html.Html Msg
-mdlTextField type_ label onInputMsg attrs =
-    Html.div
-        [ HtmlAttr.class "mdl-textfield mdl-js-textfield mdl-textfield--floating-label" ]
-        [ Html.input
-            ([ HtmlAttr.class "mdl-textfield__input"
-             , HtmlAttr.type_ type_
-             , Html.Events.onInput onInputMsg
-             ]
-                ++ attrs
-            )
-            []
-        , Html.label
-            [ HtmlAttr.class "mdl-textfield__label" ]
-            [ Html.text label ]
-        ]
-
-
-mdlBadge : String -> String -> Html.Html Msg
-mdlBadge message contents =
-    Html.span
-        [HtmlAttr.class "mdl-badge", HtmlAttr.attribute "data-badge" message ]
-        [ Html.text contents ]
 
 
 formatTime : String -> Time.Time -> List(Html.Html Msg)
@@ -314,7 +263,7 @@ formatTime suffix timeLeft =
         if timeLeft >= 0 then
             [ Html.span [] [ Html.text <| timeLeftString ++ " " ++ suffix ] ]
         else
-            [ mdlBadge "!" timeLeftString
+            [ Mdl.badge "!" timeLeftString
             , Html.text <| suffix
             ]
 
