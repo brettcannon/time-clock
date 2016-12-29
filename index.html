@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>Time Clock</title>
@@ -48,6 +48,19 @@
 <script>
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
+
+    /* MDL and Elm don't mix thanks to the former's dislike of anything dynamic
+       and the latter being fully dynamic. To overcome this, simply force the
+       MDL refresh on the first mutation. */
+    var observer = new MutationObserver(function(mutations) {
+      componentHandler.upgradeAllRegistered();
+      observer.disconnect();
+    });
+
+    var config = {attributes: true, childList: true, characterData: true,
+                  subtree: true};
+
+    observer.observe(node, config);
 </script>
 
   </body>
