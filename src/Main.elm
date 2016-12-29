@@ -191,7 +191,7 @@ view model =
                     NewWorkLength
                     [ HtmlAttr.min <| toString 0.0
                     , HtmlAttr.max <| toString 24
-                    , HtmlAttr.step <| toString 0.1
+                    , HtmlAttr.step <| toString 0.01
                     ]
                 ]
             , Mdl.cell 3
