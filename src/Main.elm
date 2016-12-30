@@ -5,7 +5,6 @@ import Html.Attributes as HtmlAttr
 import Html.Events
 import Task
 import Time
-
 import Mdl
 
 
@@ -227,7 +226,7 @@ view model =
         ]
 
 
-formatTime : String -> Time.Time -> List(Html.Html Msg)
+formatTime : String -> Time.Time -> List (Html.Html Msg)
 formatTime suffix timeLeft =
     let
         leftInSeconds =
@@ -251,7 +250,7 @@ formatTime suffix timeLeft =
         timeLeftString =
             (if timeLeft < 0 then
                 "-"
-            else
+             else
                 " "
             )
                 ++ (String.pad 2 '0' <| toString <| hours)
